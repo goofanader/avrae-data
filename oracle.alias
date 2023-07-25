@@ -1,0 +1,71 @@
+<drac2>
+'''
+!embed
+Valid Arguments
+-title <title>
+-desc <description text>
+-thumb <image url>
+-image <image url>
+-footer <footer text>
+-f "<Field Title>|<Field Text>[|inline]"
+(e.g. "Donuts|I have 15 donuts|inline" for up to 3 inline fields on a single line, or "Donuts|I have 15 donuts" for one with its own line.)
+-color [hex color]
+Leave blank for random color.
+-t <timeout (0..600)>
+'''
+</drac2>
+
+embed
+<drac2>
+# oracle [mod] [question]
+args_list = &ARGS&
+mod = 0
+dummy_mod = 0
+mod_string = "Possible"
+question = ''
+
+if args_list:
+    try:
+        dummy_mod = int(args_list[0])
+        if dummy_mod >= 3:
+            mod = 8
+            mod_string = "A Certainty"
+        elif dummy_mod == 2:
+            mod = 5
+            mod_string = "Highly Likely"
+        elif dummy_mod == 1:
+            mod = 3
+            mod_string = "Likely"
+        elif dummy_mod <= -3:
+            mod = -8
+            mod_string = "Impossible"
+        elif dummy_mod == -2:
+            mod = -5
+            mod_string = "Highly Unlikely"
+        elif dummy_mod == -1:
+            mod = -3
+            mod_string = "Unlikely"
+        
+        if len(args_list) > 1:
+            question = ' '.join(args_list[1:])
+    except ("ValueError", "TypeError"):
+        question = ' '.join(args_list)
+
+roll_result = roll('1d20')
+result = roll_result + mod
+oracle_says = 'No, and'
+
+if result > 18:
+    oracle_says = 'Yes, and'
+elif result > 12:
+    oracle_says = 'Yes'
+elif result > 10:
+    oracle_says = 'Yes, but'
+elif result == 10:
+    oracle_says = 'Maybe (skill check or reroll)'
+elif result > 7:
+    oracle_says = 'No, but'
+elif result > 2:
+    oracle_says = 'No'
+</drac2>
+-title "Consult the Oracle" {{'-f \"Question|' + question + '\"' if len(question) > 0 else ""}} -f "The Oracle says...|<oracle_says>" -f "Roll (<mod_string>)|<roll_result>+<mod>=<result>" -color "#a17bdb" -thumb "https://cdn.discordapp.com/attachments/1132649341190942782/1133244355877031956/orbuculum_by_sint3tico_dfrfdk6-375w.jpg"

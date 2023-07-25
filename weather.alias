@@ -1,0 +1,124 @@
+embed
+<drac2>
+#!weather init <world> <season> [start_counter]
+#!weather season <season>
+#!weather [-force <counter>]
+#!weather world [world]
+#!weather help
+weather_table = load_json(get_gvar('0a620928-fabc-4ec5-b5b1-bbc5cc6d4e69'))
+uvar_name = 'goofanader_weather'
+#weather init
+data = get_uvar(uvar_name)
+args_list = &ARGS&
+error_string = ""
+desc = ""
+title = "Weather"
+more_desc_list = []
+more_desc = ""
+
+if not args_list or args_list[0] == "-force":
+    if data is None:
+        error_string = "Please initialize weather with a world! Use `!weather init <world> <season> [start_counter]`"
+    else:
+        data = load_json(data)
+        world = data.current
+        season = data.worlds[world].season
+        past_counter = data.worlds[world].counter
+        temp_counter = 0
+        direction = 0
+
+        die = roll('1d6')
+        if die == 1:
+            temp_counter = -2
+            direction = -1
+        elif die == 2:
+            temp_counter = -1
+            direction = -1
+        elif die < 5:
+            perfect_counter = weather_table.seasons[season].perfect
+            if past_counter > perfect_counter:
+                temp_counter = -1
+                direction = -1
+            elif past_counter < perfect_counter:
+                temp_counter = 1
+                direction = 1
+        elif die == 5:
+            temp_counter = 1
+            direction = 1
+        else:
+            temp_counter = 2
+            direction = 1
+
+        end_counter = -1 if direction == -1 else len(weather_table.table)
+        attempted_new_counter = past_counter + direction
+        new_counter = past_counter
+        is_found = False
+        actual_counter_change = 0
+
+        while temp_counter is not 0 and attempted_new_counter < len(weather_table.table) and attempted_new_counter > -1:
+            new_counter_data = weather_table.table[attempted_new_counter]
+
+            if season in new_counter_data.seasons:
+                temp_counter -= direction
+                new_counter = attempted_new_counter
+                actual_counter_change += 1
+
+            attempted_new_counter += direction
+        
+        data.worlds[world]["counter"] = new_counter
+        set_uvar(uvar_name, dump_json(data))
+        desc = weather_table.table[new_counter].condition + " in " + weather_table.seasons[season].name
+        more_desc_list = [
+            "Roll|1d6=" + die,
+            "Counter Change|" + str(actual_counter_change * direction)
+        ]
+else:
+    command = args_list[0]
+
+    if command == "init":
+        if len(args_list) < 3:
+            error_string = "Incorrect commands for `!weather init`. `!weather init <world> <season> [start_counter]`"
+        else:
+            new_world = args_list[1]
+            start_season = args_list[2]
+            start_counter = weather_table.seasons[start_season].perfect
+
+            if len(args_list) == 4:
+                start_counter = int(args_list[3])
+            
+            new_data = {
+                "counter": start_counter,
+                "season": start_season
+            }
+
+            if data is None:
+                data = {
+                    "worlds": {},
+                    "current": new_world
+                }
+            else:
+                data = load_json(data)
+
+            data.worlds[new_world] = new_data
+
+            set_uvar(uvar_name, dump_json(data))
+            desc = "Settings saved for " + new_world
+
+    elif command == "season":
+        'season'
+    elif command == "world":
+        'world'
+    elif command == "help":
+        'help'
+
+if error_string:
+    desc = error_string
+    title = "Weather (Error)"
+    more_desc_list = []
+    
+if more_desc_list:
+    more_desc = ""
+    for i in more_desc_list:
+        more_desc += ' -f "' + i + '"'
+</drac2>
+-title "<title>" -desc "<desc>"<more_desc>

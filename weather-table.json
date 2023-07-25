@@ -1,0 +1,110 @@
+{
+    "current": {
+        "counter": 4,
+        "season": "spring"
+    },
+    "seasons": {
+        "spring": {
+            "name": "Spring",
+            "perfect": 4
+        },
+        "summer": {
+            "name": "Summer",
+            "perfect": 3
+        },
+        "fall": {
+            "name": "Fall",
+            "perfect": 4
+        },
+        "winter": {
+            "name": "Winter",
+            "perfect": 5
+        }
+    },
+    "table": [
+        {
+            "condition": "Scorching Hot",
+            "seasons": [
+                "summer"
+            ]
+        },
+        {
+            "condition": "Very Hot Day",
+            "seasons": [
+                "summer"
+            ]
+        },
+        {
+            "condition": "Hot Day",
+            "seasons": [
+                "summer"
+            ]
+        },
+        {
+            "condition": "Warm Day",
+            "seasons": [
+                "summer",
+                "fall",
+                "spring"
+            ]
+        },
+        {
+            "condition": "Perfect Day",
+            "seasons": [
+                "summer",
+                "fall",
+                "spring"
+            ]
+        },
+        {
+            "condition": "Cool Day",
+            "seasons": [
+                "summer",
+                "fall",
+                "spring",
+                "winter"
+            ]
+        },
+        {
+            "condition": "Light Rainfall",
+            "seasons": [
+                "summer",
+                "fall",
+                "spring"
+            ]
+        },
+        {
+            "condition": "Medium Rainfall",
+            "seasons": [
+                "fall",
+                "spring"
+            ]
+        },
+        {
+            "condition": "Heavy Rain and Lightning",
+            "seasons": [
+                "fall",
+                "spring"
+            ]
+        },
+        {
+            "condition": "Light Snowfall",
+            "seasons": [
+                "fall",
+                "winter"
+            ]
+        },
+        {
+            "condition": "Medium Snowfall",
+            "seasons": [
+                "winter"
+            ]
+        },
+        {
+            "condition": "Blizzard",
+            "seasons": [
+                "winter"
+            ]
+        }
+    ]
+}
