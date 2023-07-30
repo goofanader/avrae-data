@@ -7,11 +7,11 @@ charisma_checks = [
     "deception",
     "insight"
 ]
-dice = '1d20'
 
 def get_result(dice, mod, is_simple):
-    roll_result = roll(dice)
-    result = roll_result + mod
+    roll_result_data = vroll(dice)
+    roll_result = roll_result_data.dice
+    result = roll_result_data.total + mod
 
     oracle_says = ''
 
@@ -38,10 +38,11 @@ def get_result(dice, mod, is_simple):
         elif result > 2:
             oracle_says = 'No'
 
-    return oracle_says
+    return [oracle_says, roll_result, result]
 
 def npc(args_list, is_simple):
     mod = 0
+    dice = '1d20'
     if args_list:
         if args_list[0] == "npc" and len(args_list) > 1 and args_list[1] in charisma_checks:
             title = "NPC Disposition" + (': Simple' if is_simple else '')
@@ -66,15 +67,19 @@ def npc(args_list, is_simple):
             char_mod = character().skills[args_list[1]].value
             mod += char_mod
             mod_string = "Disposition"
-            oracle_says = get_result(dice, mod, is_simple)
+            data = get_result(dice, mod, is_simple)
+            oracle_says = data[0]
+            roll_result = data[1]
+            result = data[2]
 
-            return [title, mod, question, mod_string, oracle_says]
+            return [title, mod, question, mod_string, oracle_says, roll_result, result]
     return oracle(args_list, is_simple)
 
 def oracle(args_list, is_simple):
     title = 'Consult the ' + ('Simple ' if is_simple else '') + 'Oracle'
     mod = 0
     dummy_mod = 0
+    dice = '1d20'
     if args_list:
         try:
             dummy_mod = int(args_list[0])
@@ -101,7 +106,10 @@ def oracle(args_list, is_simple):
                 question = ' '.join(args_list[1:])
         except ("ValueError", "TypeError"):
             question = ' '.join(args_list)
-        
-    oracle_says = get_result(dice, mod, is_simple)
+    
+    data = get_result(dice, mod, is_simple)
+    oracle_says = data[0]
+    roll_result = data[1]
+    result = data[2]
 
-    return [title, mod, question, mod_string, oracle_says]
+    return [title, mod, question, mod_string, oracle_says, roll_result, result]

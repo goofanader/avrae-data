@@ -1,89 +1,18 @@
-
 embed
 <drac2>
 # oracle [mod] [question]
 #oracle npc <check_mod> [mod] [adv/dis] [question]
 args_list = &ARGS&
-title = 'Consult the Oracle'
-mod = 0
-dummy_mod = 0
-mod_string = "Possible"
-question = ''
-charisma_checks = [
-    "persuasion",
-    "intimidation",
-    "performance",
-    "deception",
-    "insight"
-]
-dice = '1d20'
-
-if args_list:
-    if args_list[0] == "npc" and len(args_list) > 1 and args_list[1] in charisma_checks:
-        title = "NPC Disposition"
-
-        if len(args_list) > 2:
-            try:
-                mod = int(args_list[2])
-                if len(args_list) > 3:
-                    question = ' '.join(args_list[3:])
-
-            except ("ValueError", "TypeError"):
-                question = ' '.join(args_list[2:])
-        
-        if question:
-            if question.startswith('adv ') or question == 'adv':
-                question = question[3:].strip()
-                dice = '2d20kh1'
-            elif question.startswith('dis ') or question == 'dis':
-                question = question[3:].strip()
-                dice = '2d20kl1'
-
-        char_mod = character().skills[args_list[1]].value
-        mod += char_mod
-        mod_string = "Disposition"
-    else:
-        try:
-            dummy_mod = int(args_list[0])
-            if dummy_mod >= 3:
-                mod = 8
-                mod_string = "A Certainty"
-            elif dummy_mod == 2:
-                mod = 5
-                mod_string = "Highly Likely"
-            elif dummy_mod == 1:
-                mod = 3
-                mod_string = "Likely"
-            elif dummy_mod <= -3:
-                mod = -8
-                mod_string = "Impossible"
-            elif dummy_mod == -2:
-                mod = -5
-                mod_string = "Highly Unlikely"
-            elif dummy_mod == -1:
-                mod = -3
-                mod_string = "Unlikely"
-            
-            if len(args_list) > 1:
-                question = ' '.join(args_list[1:])
-        except ("ValueError", "TypeError"):
-            question = ' '.join(args_list)
-
-roll_result = roll(dice)
-result = roll_result + mod
-oracle_says = 'No, and'
-
-if result > 18:
-    oracle_says = 'Yes, and'
-elif result > 12:
-    oracle_says = 'Yes'
-elif result > 10:
-    oracle_says = 'Yes, but'
-elif result == 10:
-    oracle_says = 'Maybe (skill check or reroll)'
-elif result > 7:
-    oracle_says = 'No, but'
-elif result > 2:
-    oracle_says = 'No'
+using(
+    oracle="0c48434c-9767-4d94-8f07-ddd74ed4788a"
+)
+data = oracle.npc(args_list, False)
+title = data[0]
+mod = data[1]
+question = data[2]
+mod_string = data[3]
+oracle_says = data[4]
+roll_result = data[5]
+result = data[6]
 </drac2>
 -title "<title>" {{'-f \"Question|' + question + '\"' if len(question) > 0 else ""}} -f "The Oracle says...|<oracle_says>" -f "Roll (<mod_string>)|<roll_result>{{'+' if mod > -1 else ''}}<mod>=<result>" -color "#a17bdb" -thumb "https://cdn.discordapp.com/attachments/1132649341190942782/1133244355877031956/orbuculum_by_sint3tico_dfrfdk6-375w.jpg"
