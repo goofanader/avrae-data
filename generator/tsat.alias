@@ -1,0 +1,45 @@
+embed
+<drac2>
+# tsat questname [last] [1] [1] [1]
+# tsat quicknpc
+
+args_list = &ARGS&
+quick_citizens_table = load_json(get_gvar('ee544961-6025-4999-a16d-f094efe4e9dc'))
+quest_name_table = load_json(get_gvar('bfaa6ff3-6c49-4cf3-8ddd-0a52d1b732b4'))
+title = ''
+desc = ''
+more_desc_list = []
+more_desc = ''
+
+if len(args_list) > 0:
+    command = args_list[0]
+
+    if command == 'questname':
+        tables = quest_name_table.tables
+        quest_name = ''
+
+        for table in tables:
+            roll_num = roll(table.roll)
+            quest_name += ' ' + table.table[roll_num - 1]
+            more_desc_list.append(table.name + ' Roll|' + roll_num + '|inline')
+        
+        title = 'Quest'
+        desc = quest_name.strip()
+    elif command == 'quicknpc':
+        tables = quick_citizens_table.tables
+        citizen_info = {}
+        index = roll('1d100')
+
+        for table in tables:
+            citizen_info[table.name] = table.table[index - 1]
+        
+        title = citizen_info['Name'] + ' (' + index + ' Roll)'
+        pronoun = 'She' if citizen_info['Gender'] == 'female' else 'He'
+        desc = citizen_info['Name'] + ' is a ' + citizen_info['Age'] + '-year-old ' + citizen_info['Community'] + ' ' + citizen_info['Gender'] + '. ' + pronoun + ' is a ' + citizen_info['Occupation'] + '.'
+    
+    if more_desc_list:
+        more_desc = ""
+        for i in more_desc_list:
+            more_desc += ' -f "' + i + '"'
+</drac2>
+-title "<title>" -desc "<desc>"<more_desc>

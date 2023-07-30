@@ -1,0 +1,107 @@
+mod_string = "Possible"
+question = ''
+charisma_checks = [
+    "persuasion",
+    "intimidation",
+    "performance",
+    "deception",
+    "insight"
+]
+dice = '1d20'
+
+def get_result(dice, mod, is_simple):
+    roll_result = roll(dice)
+    result = roll_result + mod
+
+    oracle_says = ''
+
+    if is_simple:
+        oracle_says = 'No'
+
+        if result > 12:
+            oracle_says = 'Yes'
+        elif result > 6:
+            oracle_says = 'Maybe'
+    else:
+        oracle_says = 'No, and'
+
+        if result > 18:
+            oracle_says = 'Yes, and'
+        elif result > 12:
+            oracle_says = 'Yes'
+        elif result > 10:
+            oracle_says = 'Yes, but'
+        elif result == 10:
+            oracle_says = 'Maybe (skill check or reroll)'
+        elif result > 7:
+            oracle_says = 'No, but'
+        elif result > 2:
+            oracle_says = 'No'
+
+    return oracle_says
+
+def npc(args_list, is_simple):
+    mod = 0
+    if args_list:
+        if args_list[0] == "npc" and len(args_list) > 1 and args_list[1] in charisma_checks:
+            title = "NPC Disposition" + (': Simple' if is_simple else '')
+
+            if len(args_list) > 2:
+                try:
+                    mod = int(args_list[2])
+                    if len(args_list) > 3:
+                        question = ' '.join(args_list[3:])
+                        
+                except ("ValueError", "TypeError"):
+                    question = ' '.join(args_list[2:])
+            
+            if question:
+                if question.startswith('adv ') or question == 'adv':
+                    question = question[3:].strip()
+                    dice = '2d20kh1'
+                elif question.startswith('dis ') or question == 'dis':
+                    question = question[3:].strip()
+                    dice = '2d20kl1'
+            
+            char_mod = character().skills[args_list[1]].value
+            mod += char_mod
+            mod_string = "Disposition"
+            oracle_says = get_result(dice, mod, is_simple)
+
+            return [title, mod, question, mod_string, oracle_says]
+    return oracle(args_list, is_simple)
+
+def oracle(args_list, is_simple):
+    title = 'Consult the ' + ('Simple ' if is_simple else '') + 'Oracle'
+    mod = 0
+    dummy_mod = 0
+    if args_list:
+        try:
+            dummy_mod = int(args_list[0])
+            if dummy_mod >= 3:
+                mod = 6
+                mod_string = "A Certainty"
+            elif dummy_mod == 2:
+                mod = 4
+                mod_string = "Highly Likely"
+            elif dummy_mod == 1:
+                mod = 2
+                mod_string = "Likely"
+            elif dummy_mod <= -3:
+                mod = -6
+                mod_string = "Impossible"
+            elif dummy_mod == -2:
+                mod = -4
+                mod_string = "Highly Unlikely"
+            elif dummy_mod == -1:
+                mod = -2
+                mod_string = "Unlikely"
+            
+            if len(args_list) > 1:
+                question = ' '.join(args_list[1:])
+        except ("ValueError", "TypeError"):
+            question = ' '.join(args_list)
+        
+    oracle_says = get_result(dice, mod, is_simple)
+
+    return [title, mod, question, mod_string, oracle_says]

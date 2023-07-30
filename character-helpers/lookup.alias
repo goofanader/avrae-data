@@ -1,0 +1,98 @@
+embed <drac2>
+# !lookup <skill name|ability>
+args_list = &ARGS&
+abilities = [
+    "strength",
+    "dexterity",
+    "constitution",
+    "intelligence",
+    "wisdom",
+    "charisma"
+]
+skills = [
+    "acrobatics",
+    "animalHandling",
+    "arcana",
+    "athletics",
+    "deception",
+    "history",
+    "insight",
+    "intimidation",
+    "investigation",
+    "medicine",
+    "nature",
+    "perception",
+    "performance",
+    "persuasion",
+    "religion",
+    "sleightOfHand",
+    "stealth",
+    "survival"
+]
+
+skill_name_fix = {
+    "animalHandling": "Animal Handling",
+    "sleightOfHand": "Sleight of Hand"
+}
+
+more_desc = ""
+more_desc_list = []
+error_string = ""
+title = ""
+
+if args_list:
+    skill_or_ability = args_list[0]
+    char_skills = character().skills
+    char_abilities = character().stats
+    char_saves = character().saves
+
+    is_skill = False
+    is_ability = False
+    chosen_skill_or_ability = ''
+
+    for ability in abilities:
+        if skill_or_ability in ability:
+            is_ability = True
+            chosen_skill_or_ability = ability
+            break
+    
+    if not is_ability:
+        for skill in skills:
+            if skill_or_ability in skill:
+                is_skill = True
+                chosen_skill_or_ability = skill
+                break
+
+    if not is_skill and not is_ability:
+        error_string = "Did not find a skill or ability with that name!"
+    else:
+        if is_skill:
+            mod = char_skills[chosen_skill_or_ability].value
+            passive = mod + 10
+            prof = char_skills[chosen_skill_or_ability].prof > 0
+            more_desc_list = [
+                'Modifier|' + mod + '|inline',
+                'Passive|' + passive + '|inline',
+                'Proficient|' + ('Yes' if prof else 'No') + '|inline'
+            ]
+        elif is_ability:
+            ability_info = char_abilities.get(chosen_skill_or_ability)
+            more_desc_list.append('Ability Score|' + ability_info + '|inline')
+            more_desc_list.append('Ability Mod|' + char_abilities.get_mod(chosen_skill_or_ability) + '|inline')
+            more_desc_list.append('Save|' + char_saves.get(chosen_skill_or_ability).value + '|inline')
+        
+        title = chosen_skill_or_ability.capitalize()
+        if chosen_skill_or_ability in skill_name_fix:
+            title = skill_name_fix[chosen_skill_or_ability]
+else:
+    error_string = "You must enter a skill or ability name!"
+
+if error_string:
+    title = "Lookup Error"
+    more_desc_list = []
+
+if more_desc_list:
+    more_desc = ""
+    for i in more_desc_list:
+        more_desc += ' -f "' + i + '"'
+</drac2> -title "<name>: <title>"{{' -desc "' + error_string + '"' if error_string else ''}} <more_desc> -color <color> -thumb <image>

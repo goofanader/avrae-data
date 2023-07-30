@@ -104,10 +104,43 @@ else:
             set_uvar(uvar_name, dump_json(data))
             desc = "Settings saved for " + new_world
 
+    elif data is None:
+        error_string = "Please initialize weather with a world! Use `!weather init <world> <season> [start_counter]`"
     elif command == "season":
-        'season'
+        valid_seasons = [
+            "summer",
+            "fall",
+            "winter",
+            "spring"
+        ]
+        if len(args_list) < 2:
+            error_string = "Please enter a season. Valid values: " + ', '.join(valid_seasons)
+        elif not args_list[1] in valid_seasons:
+            error_string = "Please enter a valid season. Valid values: " + ', '.join(valid_seasons)
+        else:
+            data = load_json(data)
+            data.worlds[data.current]["season"] = args_list[1]
+            desc = "New season for world " + data.current + ": " + args_list[1]
+            set_uvar(uvar_name, dump_json(data))
     elif command == "world":
-        'world'
+        data = load_json(data)
+        worlds = data.worlds.keys()
+
+        if len(args_list) < 2:
+            error_string = "Please enter a world name. Valid worlds: " + ', '.join(worlds)
+        elif not args_list[1] in worlds:
+            error_string = "Please enter a valid world name. Valid worlds: " + ', '.join(worlds)
+        else:
+            data["current"] = args_list[1]
+            desc = "Switched to world " + args_list[1]
+            world = data.worlds[args_list[1]]
+            counter = world.counter
+            season = world.season
+
+            more_desc_list = [
+                "Current Weather|" + weather_table.table[counter].condition + " in " + weather_table.seasons[season].name
+            ]
+            set_uvar(uvar_name, dump_json(data))
     elif command == "help":
         'help'
 
