@@ -66,7 +66,7 @@ def npc(args_list, is_simple):
             
             char_mod = character().skills[args_list[1]].value
             mod += char_mod
-            mod_string = "Disposition"
+            mod_string = "Disposition, Using " + args_list[1].capitalize()
             data = get_result(dice, mod, is_simple)
             oracle_says = data[0]
             roll_result = data[1]
@@ -84,22 +84,22 @@ def oracle(args_list, is_simple):
         try:
             dummy_mod = int(args_list[0])
             if dummy_mod >= 3:
-                mod = 6
+                mod = 6 if is_simple else 8
                 mod_string = "A Certainty"
             elif dummy_mod == 2:
-                mod = 4
+                mod = 4 if is_simple else 5
                 mod_string = "Highly Likely"
             elif dummy_mod == 1:
-                mod = 2
+                mod = 2 if is_simple else 3
                 mod_string = "Likely"
             elif dummy_mod <= -3:
-                mod = -6
+                mod = -6 if is_simple else -8
                 mod_string = "Impossible"
             elif dummy_mod == -2:
-                mod = -4
+                mod = -4 if is_simple else -5
                 mod_string = "Highly Unlikely"
             elif dummy_mod == -1:
-                mod = -2
+                mod = -2 if is_simple else -3
                 mod_string = "Unlikely"
             
             if len(args_list) > 1:

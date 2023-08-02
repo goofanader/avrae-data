@@ -2,12 +2,12 @@
     "name": "Dungeon Size",
     "roll": "1d20",
     "sizes": [
-        "tiny",
-        "small",
-        "medium",
-        "large",
-        "huge",
-        "limitless"
+        {"size": "tiny", "rooms": "1d4+2"},
+        {"size": "small", "rooms": "1d6+4"},
+        {"size": "medium", "rooms": "4d4+6"},
+        {"size": "large", "rooms": "5d6+12"},
+        {"size": "huge", "rooms": "10d6+24"},
+        {"size": "limitless", "rooms": "100"}
     ],
     "table": [
         {
@@ -75,11 +75,11 @@
             "rooms": "4d4+6"
         },
         {
-            "size": "Large",
+            "size": "large",
             "rooms": "5d6+12"
         },
         {
-            "size": "Large",
+            "size": "large",
             "rooms": "5d6+12"
         },
         {

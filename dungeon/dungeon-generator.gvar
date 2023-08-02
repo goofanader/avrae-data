@@ -1,0 +1,174 @@
+tables = {
+    "size": load_json(get_gvar('c0f8e00d-c507-4ec9-8ee9-8a7578914981'))
+}
+uvar_prefix = "goofanader_"
+dungeon_list_uvar_name = uvar_prefix + "dungeon_list"
+dungeon_list = get_uvar(dungeon_list_uvar_name)
+data = {}
+map_size_mod = 5
+max_map_size = 100
+directions = [
+    "north",
+    "south",
+    "east",
+    "west"
+]
+letters = [
+    'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'
+]
+
+def get_letter_grid(x):
+    num_letters = len(letters)
+    mult = floor((x) / num_letters) - 1
+    mod = (x % num_letters)
+    column = f'{letters[mult] if mult > -1 else ""}{letters[mod] if mod > -1 else ""}'
+
+    return column
+
+def get_dimensions(start_x, start_y, end_x, end_y):
+    return f"{get_letter_grid(start_x)}{str(start_y + 1)}:{get_letter_grid(end_x)}{str(end_y + 1)}"
+
+def init():
+    if dungeon_list is None:
+        new_dungeon_list = {
+            "dungeons": [],
+            "current": ""
+        }
+        set_uvar(dungeon_list_uvar_name, dump_json(new_dungeon_list))
+        data = new_dungeon_list
+    else:
+        data = load_json(dungeon_list)
+    
+    #for dungeon in data["dungeons"]:
+    #    data[dungeon] = load_json(get_uvar(uvar_prefix + dungeon))
+
+    return data
+
+def create(size, name, start_direction):
+    #data = init()
+    
+    if not name:
+        index = len(data["dungeons"])
+        name = 'dungeon' + str(index)
+    
+    if name in data["dungeons"]:
+        return "name error"
+    
+    if start_direction and not start_direction in directions:
+        return "direction error"
+
+    if not start_direction:
+        start_direction = directions[randint(len(directions))]
+
+    new_size_string = size
+    new_size = {}
+
+    if not new_size_string:
+        index = roll(tables["size"]["roll"] + '-1')
+        new_size = tables["size"]["table"][index]
+    else:
+        for size_info in tables["size"]['sizes']:
+            if size_info["size"] == new_size_string:
+                new_size = size_info
+                break
+    
+    room_roll = new_size["rooms"]
+    num_rooms = roll(room_roll)
+    map_size = min(max_map_size, num_rooms * map_size_mod)
+
+    grid = {}
+    x = 0
+    y = 0
+
+    if start_direction == "north":
+        x = floor(map_size / 2) - 1
+        y = 0
+    elif start_direction == "south":
+        x = floor(map_size / 2) - 1
+        y = map_size - 1
+    elif start_direction == "east":
+        x = map_size - 1
+        y = floor(map_size / 2) - 1
+    else:
+        x = 0
+        y = floor(map_size / 2) - 1
+
+    grid[x] = {}
+    grid[x][y] = 0
+    dimensions = get_dimensions(x, y, x, y)
+    grid_uvar_name = uvar_prefix + name + "_ground"
+    
+    new_dungeon = {
+        "name": name,
+        "rooms": {
+            "max": num_rooms,
+            "made": 0
+        },
+        "floors": {
+            "ground": {
+                "name": "Ground Floor",
+                "index": 1,
+                "grid": grid_uvar_name,
+                "dimensions": {
+                    "start": [x, y],
+                    "end": [x, y],
+                    "string": dimensions
+                }
+            }
+        },
+        "locations": [
+            {
+                "index": 0,
+                "name": "Start",
+                "dimensions": {
+                    "start": [x, y],
+                    "end": [x, y],
+                    "string": dimensions
+                },
+                "floor": "ground",
+                "type": "start",
+                "walls": [],
+                "doors": [],
+                "stairs": [],
+                "items": [],
+                "tokens": [],
+                "description": "Start of the dungeon.",
+                "direction": start_direction
+            }
+        ],
+        "current": {
+            "location": 0,
+            "floor": "ground"
+        }
+    }
+
+    data["dungeons"].append(name)
+    set_uvar(uvar_prefix + name, dump_json(new_dungeon))
+    set_uvar(grid_uvar_name, dump_json(grid))
+    data["current"] = name
+    set_uvar(dungeon_list_uvar_name, dump_json(data))
+
+    return "Created a new dungeon! Name: " + name + "\nDimensions: " + dimensions + " | Rooms: " + num_rooms + " | Direction: " + start_direction
+
+def list_dungeons():
+    pass
+
+def delete_dungeon(name):
+    if name in data["dungeons"]:
+        dungeon_uvar_name = uvar_prefix + name
+        dungeon_data = load_json(get_uvar(dungeon_uvar_name))
+        for key in dungeon_data["floors"].keys():
+            delete_uvar(dungeon_uvar_name + '_' + key)
+        delete_uvar(dungeon_uvar_name)
+
+        if data["current"] == name:
+            data["current"] = ""
+        data["dungeons"].remove(name)
+        set_uvar(dungeon_list_uvar_name, dump_json(data))
+
+        return "Removed " + name
+        
+    else:
+        return "name not found!"
+
+data = init()

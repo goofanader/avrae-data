@@ -1,0 +1,46 @@
+embed <drac2>
+using(
+    dungeon = 'ea7b8bc1-ce15-4a5a-a562-f4b00f5328aa'
+)
+args_list = &ARGS&
+message = ""
+title = "Dungeon Generator"
+
+if args_list:
+    # dungeon create [-name <name>] [-size <tiny|small|medium|large|huge|limitless>] [-direction <north|south|east|west>]
+    if args_list[0] == 'create':
+        name = ""
+        size = ""
+        direction = ""
+        
+        for word in args_list:
+            index = args_list.index(word)
+            if word == '-name' and index + 1 < len(args_list):
+                name = args_list[index + 1]
+            elif word == '-size' and index + 1 < len(args_list):
+                size = args_list[index + 1]
+            elif word == '-direction' and index + 1 < len(args_list):
+                direction = args_list[index + 1]
+        
+        message = dungeon.create(size, name, direction)
+        title = "Creating New Dungeon"
+    elif args_list[0] == 'delete':
+        title = "Delete Dungeon"
+        if len(args_list) < 2:
+            message = "Please provide a name to delete!"
+        else:
+            name = args_list[1]
+            message = dungeon.delete_dungeon(name)
+    elif args_list[0] == 'test':
+        col = 0
+        row = 0
+
+        if len(args_list) > 1:
+            col = int(args_list[1])
+        if len(args_list) > 2:
+            row = int(args_list[2])
+        
+        message = f'!dungeon test {col} {row}\n'
+        message += dungeon.get_dimensions(col, row, col, row)
+        title = "Testing letter grid"
+</drac2> -title "<title>" -desc "<message>"
