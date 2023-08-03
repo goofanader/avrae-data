@@ -1,6 +1,7 @@
-tables = {
-    "size": load_json(get_gvar('c0f8e00d-c507-4ec9-8ee9-8a7578914981'))
-}
+using(
+    tables = 'b4a36d54-45c1-43bb-a729-df6d68fa94ca',
+    dungeon_roll = '0760f5b8-838a-40c7-9c9b-44cfb2a19daf'
+)
 uvar_prefix = "goofanader_"
 dungeon_list_uvar_name = uvar_prefix + "dungeon_list"
 dungeon_list = get_uvar(dungeon_list_uvar_name)
@@ -38,9 +39,6 @@ def init():
         data = new_dungeon_list
     else:
         data = load_json(dungeon_list)
-    
-    #for dungeon in data["dungeons"]:
-    #    data[dungeon] = load_json(get_uvar(uvar_prefix + dungeon))
 
     return data
 
@@ -64,10 +62,10 @@ def create(size, name, start_direction):
     new_size = {}
 
     if not new_size_string:
-        index = roll(tables["size"]["roll"] + '-1')
-        new_size = tables["size"]["table"][index]
+        index = roll(tables.size["roll"] + '-1')
+        new_size = tables.size["table"][index]
     else:
-        for size_info in tables["size"]['sizes']:
+        for size_info in tables.size['sizes']:
             if size_info["size"] == new_size_string:
                 new_size = size_info
                 break
@@ -77,25 +75,31 @@ def create(size, name, start_direction):
     map_size = min(max_map_size, num_rooms * map_size_mod)
 
     grid = {}
-    x = 0
-    y = 0
+    x = y = end_x = end_y = 0
 
-    if start_direction == "north":
+    if start_direction == "south":
         x = floor(map_size / 2) - 1
         y = 0
-    elif start_direction == "south":
+        end_x = x + 1
+    elif start_direction == "north":
         x = floor(map_size / 2) - 1
-        y = map_size - 1
-    elif start_direction == "east":
-        x = map_size - 1
+        y = end_y = map_size - 1
+        end_x = x + 1
+    elif start_direction == "west":
+        x = end_x = map_size - 1
         y = floor(map_size / 2) - 1
+        end_y = y + 1
     else:
         x = 0
         y = floor(map_size / 2) - 1
+        end_y = y + 1
 
     grid[x] = {}
     grid[x][y] = 0
-    dimensions = get_dimensions(x, y, x, y)
+    if end_x != x:
+        grid[end_x] = {}
+    grid[end_x][end_y] = 0
+    dimensions = get_dimensions(x, y, end_x, end_y)
     grid_uvar_name = uvar_prefix + name + "_ground"
     
     new_dungeon = {
@@ -111,7 +115,7 @@ def create(size, name, start_direction):
                 "grid": grid_uvar_name,
                 "dimensions": {
                     "start": [x, y],
-                    "end": [x, y],
+                    "end": [end_x, end_y],
                     "string": dimensions
                 }
             }
@@ -122,7 +126,7 @@ def create(size, name, start_direction):
                 "name": "Start",
                 "dimensions": {
                     "start": [x, y],
-                    "end": [x, y],
+                    "end": [end_x, end_y],
                     "string": dimensions
                 },
                 "floor": "ground",
@@ -170,5 +174,44 @@ def delete_dungeon(name):
         
     else:
         return "name not found!"
+
+def start_dungeon(name, force_index=None):
+    if not name in data["dungeons"]:
+        err("The dungeon name does not exist!")
+    
+    dungeon_data = load_json(get_uvar(uvar_prefix + name))
+    to_roll_on = ""
+    location_data = {}
+    grid_data = load_json(get_uvar(uvar_prefix + name + "_" + dungeon_data["current"]["floor"]))
+    if dungeon_data["current"]["location"] == 0:
+        # this is the starting location, so need to build the starting room
+        index = roll(tables.start["roll"]) - 1
+        # we're going to only work with the passage table for now
+        type_data = tables.start["table"][0]
+        location_name = type_data["name"]
+
+        if "roll_on" in type_data:
+            to_roll_on = type_data["roll_on"]
+        elif "roll" in type_data:
+            type_index = roll(type_data["roll"]) - 1
+            to_roll_on = type_data["table"][type_index]["roll_on"]
+            location_name += ': ' + type_data["table"][type_index]["name"]
+    else:
+        return "We've already started the dungeon."
+    
+    if to_roll_on == "passage":
+        location_data, grid_data = dungeon_roll.roll_passage(dungeon_data, grid_data, location_name, force_index)
+    elif to_roll_on == "room":
+        location_data = dungeon_roll.roll_room(dungeon_data)
+    elif to_roll_on == "door":
+        location_data = dungeon_roll.roll_door(dungeon_data)
+    elif to_roll_on == "stairs":
+        location_data = dungeon_roll.roll_stairs(dungeon_data)
+
+    # set current dungeon to this one
+    data["current"] = name
+    set_uvar(dungeon_list_uvar_name, dump_json(data))
+
+    return location_data
 
 data = init()

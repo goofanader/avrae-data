@@ -1,0 +1,377 @@
+{
+    "name": "passage",
+    "roll": "1d20",
+    "table": [
+        {
+            "description": "Passage continues [roll_result] ft.",
+            "roll": "1d4*10",
+            "length": "[roll_result]",
+            "width": "[continue]",
+            "doors": {
+                "door_list": [
+                    {
+                        "is_open": true,
+                        "width": "[continue]",
+                        "length": "0",
+                        "side": "continue",
+                        "next": "passage"
+                    }
+                ]
+            }
+        },
+        {
+            "description": "Passage continues 15 ft. and ends at a door.",
+            "length": "15",
+            "width": "[continue]",
+            "doors": {
+                "door_list": [
+                    {
+                        "is_roll": true,
+                        "side": "continue"
+                    }
+                ]
+            }
+        },
+        {
+            "description": "Passage continues 30 ft. and ends in stairs.",
+            "length": "30",
+            "width": "[continue]",
+            "stairs": {
+                "side": "continue",
+                "length": "0"
+            }
+        },
+        {
+            "description": "Passage turns left 90 degrees.",
+            "length": "10",
+            "width": "[continue]",
+            "doors": {
+                "door_list": [
+                    {
+                        "is_open": true,
+                        "width": "[continue]",
+                        "length": "10",
+                        "side": "left",
+                        "next": "passage"
+                    }
+                ]
+            }
+        },
+        {
+            "description": "Passage turns right 90 degrees.",
+            "length": "10",
+            "width": "[continue]",
+            "doors": {
+                "door_list": [
+                    {
+                        "is_open": true,
+                        "width": "[continue]",
+                        "length": "10",
+                        "side": "right",
+                        "next": "passage"
+                    }
+                ]
+            }
+        },
+        {
+            "description": "Passage dead ends.",
+            "doors": {
+                "door_list": [
+                    {
+                        "is_secret": "40",
+                        "dc": "1d10+7",
+                        "skill": "investigation",
+                        "side": "continue"
+                    }
+                ]
+            }
+        },
+        {
+            "description": "Passage continues [roll_result] ft. and comes to a four-way intersection.",
+            "roll": "1d4*10",
+            "length": "[roll_result]",
+            "width": "[continue]",
+            "doors": {
+                "door_list": [
+                    {
+                        "is_open": true,
+                        "width": "[continue]",
+                        "length": "10",
+                        "side": "left",
+                        "next": "passage"
+                    },
+                    {
+                        "is_open": true,
+                        "width": "[continue]",
+                        "length": "10",
+                        "side": "right",
+                        "next": "passage"
+                    },
+                    {
+                        "is_open": true,
+                        "width": "[continue]",
+                        "length": "10",
+                        "side": "continue",
+                        "next": "passage"
+                    }
+                ]
+            }
+        },
+        {
+            "description": "Passage continues [roll_result] ft. and comes to a T-junction.",
+            "roll": "1d4*10",
+            "length": "[roll_result]",
+            "width": "[continue]",
+            "doors": {
+                "door_list": [
+                    {
+                        "is_open": true,
+                        "width": "[continue]",
+                        "length": "10",
+                        "side": "left",
+                        "next": "passage"
+                    },
+                    {
+                        "is_open": true,
+                        "width": "[continue]",
+                        "length": "10",
+                        "side": "right",
+                        "next": "passage"
+                    }
+                ]
+            }
+        },
+        {
+            "description": "Passage continues [roll_result] ft. and then you see a side passage leading off to the left.",
+            "roll": "1d6*10",
+            "length": "[roll_result]",
+            "width": "[continue]",
+            "doors": {
+                "door_list": [
+                    {
+                        "is_open": true,
+                        "width": "[continue]",
+                        "length": "10",
+                        "side": "left",
+                        "next": "passage"
+                    },
+                    {
+                        "is_open": true,
+                        "width": "[continue]",
+                        "length": "0",
+                        "side": "continue",
+                        "next": "passage"
+                    }
+                ]
+            }
+        },
+        {
+            "description": "Passage continues [roll_result] ft. and then you see a side passage leading off to the right.",
+            "roll": "1d6*10",
+            "length": "[roll_result]",
+            "width": "[continue]",
+            "doors": {
+                "door_list": [
+                    {
+                        "is_open": true,
+                        "width": "[continue]",
+                        "length": "10",
+                        "side": "right",
+                        "next": "passage"
+                    },
+                    {
+                        "is_open": true,
+                        "width": "[continue]",
+                        "length": "0",
+                        "side": "continue",
+                        "next": "passage"
+                    }
+                ]
+            }
+        },
+        {
+            "description": "Passage ends in an open entrance to a room.",
+            "length": "5",
+            "width": "[continue]",
+            "doors": {
+                "door_list": [
+                    {
+                        "is_open": true,
+                        "width": "[continue]",
+                        "length": "0",
+                        "side": "continue",
+                        "next": "room"
+                    }
+                ]
+            }
+        },
+        {
+            "description": "Door in right wall.",
+            "length": "5",
+            "width": "[continue]",
+            "doors": {
+                "door_list": [
+                    {
+                        "is_roll": true,
+                        "side": "right"
+                    },
+                    {
+                        "is_open": true,
+                        "width": "[continue]",
+                        "length": "0",
+                        "side": "continue",
+                        "next": "passage"
+                    }
+                ]
+            }
+        },
+        {
+            "description": "Door in left wall.",
+            "length": "5",
+            "width": "[continue]",
+            "doors": {
+                "door_list": [
+                    {
+                        "is_roll": true,
+                        "side": "left"
+                    },
+                    {
+                        "is_open": true,
+                        "width": "[continue]",
+                        "length": "0",
+                        "side": "continue",
+                        "next": "passage"
+                    }
+                ]
+            }
+        },
+        {
+            "description": "Secret door on [side_result] passage wall.",
+            "roll": "[secret]",
+            "length": "5",
+            "width": "[continue]",
+            "doors": {
+                "door_list": [
+                    {
+                        "is_secret": "1",
+                        "dc": "15",
+                        "skill": "perception",
+                        "side": "[left|right]"
+                    },
+                    {
+                        "is_open": true,
+                        "width": "[continue]",
+                        "length": "0",
+                        "side": "continue",
+                        "next": "passage"
+                    }
+                ]
+            }
+        },
+        {
+            "description": "Passage narrows [roll_result] ft.",
+            "roll": "1d6 / 2 * 10",
+            "width": "([roll_result] * -1) + [continue]",
+            "min_width": "5",
+            "length": "5",
+            "doors": {
+                "door_list": [
+                    {
+                        "is_open": true,
+                        "width": "[continue]",
+                        "length": "0",
+                        "side": "continue",
+                        "next": "passage"
+                    }
+                ]
+            }
+        },
+        {
+            "description": "Passage widens [roll_result] ft.",
+            "roll": "1d6 / 2 * 10",
+            "width": "[roll_result] + [continue]",
+            "min_width": "10",
+            "length": "5",
+            "doors": {
+                "door_list": [
+                    {
+                        "is_open": true,
+                        "width": "[continue]",
+                        "length": "0",
+                        "side": "continue",
+                        "next": "passage"
+                    }
+                ]
+            }
+        },
+        {
+            "description": "Opening to the left, stairs.",
+            "width": "[continue]",
+            "length": "5",
+            "doors": {
+                "door_list": [
+                    {
+                        "is_open": true,
+                        "width": "[continue]",
+                        "length": "5",
+                        "side": "continue",
+                        "next": "passage"
+                    }
+                ]
+            },
+            "stairs": {
+                "side": "left",
+                "length": "5"
+            }
+        },
+        {
+            "description": "Opening to the right, stairs.",
+            "width": "[continue]",
+            "length": "5",
+            "doors": {
+                "door_list": [
+                    {
+                        "is_open": true,
+                        "width": "[continue]",
+                        "length": "5",
+                        "side": "continue",
+                        "next": "passage"
+                    }
+                ]
+            },
+            "stairs": {
+                "side": "right",
+                "length": "5"
+            }
+        },
+        {
+            "description": "Opening in the floor, straight drop down [roll_result] ft to a [type_result].",
+            "roll": "1d10 * 10",
+            "length": "5",
+            "width": "[continue]",
+            "stairs": {
+                "side": "continue",
+                "length": "0",
+                "is_pit": true
+            },
+            "next": {
+                "roll": "1d2",
+                "table": [
+                    "passage",
+                    "room"
+                ],
+                "floor": "-[roll_result] / 10 / 3 - 1"
+            }
+        },
+        {
+            "next": {
+                "roll": "1",
+                "table": [
+                    "architecture"
+                ]
+            },
+            "length": "5",
+            "width": "[continue]"
+        }
+    ]
+}

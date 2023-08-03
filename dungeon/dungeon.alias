@@ -43,4 +43,18 @@ if args_list:
         message = f'!dungeon test {col} {row}\n'
         message += dungeon.get_dimensions(col, row, col, row)
         title = "Testing letter grid"
+    elif args_list[0] == 'start':
+        title = "Start Dungeon"
+        name = ""
+        force_index = None
+        if dungeon.data and "current" in dungeon.data:
+            name = dungeon.data["current"]
+        if len(args_list) > 1:
+            name = args_list[1]
+        elif not name:
+            err("Initialize the dungeon or provide a dungeon name!")
+
+        if len(args_list) > 2:
+            force_index = int(args_list[2])
+        message += dungeon.start_dungeon(name, force_index)
 </drac2> -title "<title>" -desc "<message>"

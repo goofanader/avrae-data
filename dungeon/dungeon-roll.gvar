@@ -1,0 +1,121 @@
+using(
+    tables = 'b4a36d54-45c1-43bb-a729-df6d68fa94ca'
+)
+
+def roll_passage(dungeon_data, grid_data, location_name, force_passage=None):
+    index = roll(tables.passage["roll"]) - 1
+    if force_passage != None and force_passage > -1:
+        index = force_passage
+    data = tables.passage["table"][index]
+
+    description = ""
+    length = 0
+    width = 0
+    prev_location_index = dungeon_data["current"]["location"]
+    prev_location_data = dungeon_data["locations"][prev_location_index]
+    previous_width = 2
+    roll_result = 0
+
+    if prev_location_data["type"] == "passage" and "width" in prev_location_data:
+        previous_width = prev_location_data["width"]
+
+    if "roll" in data:
+        roll_result = roll(data["roll"])
+    if "description" in data:
+        description = data["description"].replace("[roll_result]", str(roll_result))
+    if "length" in data:
+        length_roll_string = data["length"].replace("[roll_result]", str(roll_result))
+        length = floor(roll(length_roll_string) / 5)
+    if "width" in data:
+        width_roll_string = data["width"].replace("[roll_result]", str(roll_result)).replace("[continue]", str(previous_width * 5))
+        width = floor(roll(width_roll_string) / 5)
+
+        if "min_width" in data:
+            min_width = floor(roll(data["min_width"]) / 5)
+            width = max(min_width, width)
+    
+    prev_dimensions = prev_location_data["dimensions"]
+    prev_direction = prev_location_data["direction"]
+    start_x = start_y = end_x = end_y = 0
+
+    if prev_direction == "north":
+        start_x = prev_dimensions["start"][0] + floor(previous_width / 2) - floor(width / 2)
+        end_y = prev_dimensions["start"][1] - 1
+        end_x = start_x + width - 1
+        start_y = end_y - length + 1
+        #if previous_width == width:
+            #start_x = prev_dimensions["start"][0]
+            #end_x = prev_dimensions["end"][0]
+    elif prev_direction == "south":
+        start_x = prev_dimensions["start"][0] + floor(previous_width / 2) - floor(width / 2)
+        start_y = prev_dimensions["start"][1] + 1
+        end_x = start_x + width - 1
+        end_y = start_y + length - 1
+        #if previous_width == width:
+            #start_x = prev_dimensions["start"][0]
+            #end_x = prev_dimensions["end"][0]
+    elif prev_direction == "east":
+        start_y = prev_dimensions["start"][1] + floor(previous_width / 2) - floor(width / 2)
+        # 49 + 1 - 4 = 46
+        start_x = prev_dimensions["start"][0] + 1
+        end_y = start_y + width - 1
+        # 46 + (8 - 4) = 50
+        end_x = start_x + length - 1
+        #if previous_width == width:
+            #start_y = prev_dimensions["start"][1]
+            #end_y = prev_dimensions["end"][1]
+    elif prev_direction == "west":
+        start_y = prev_dimensions["start"][1] + floor(previous_width / 2) - floor(width / 2)
+        end_x = prev_dimensions["start"][0] - 1
+        end_y = start_y + width - 1
+        start_x = end_x - length + 1
+        #if previous_width == width:
+            #start_y = prev_dimensions["start"][1]
+            #end_y = prev_dimensions["end"][1]
+    
+    if "doors" in data:
+        door_list = data["doors"]["door_list"]
+        if "roll" in data["doors"]:
+            door_roll = roll(data["doors"]["roll"]) - 1
+            door_list = [door_list[door_roll]]
+
+        #for door_info in door_list:
+
+    if "stairs" in data:
+        pass
+
+    new_location = {
+        "index": len(dungeon_data["locations"]),
+        "name": location_name,
+        "dimensions": {
+            "start": [start_x, start_y],
+            "end": [end_x, end_y],
+            "length": length,
+            "width": width,
+            "string": "TBD"
+        },
+        "floor": prev_location_data["floor"],
+        "type": "passage",
+        "walls": [],
+        "doors": [],
+        "stairs": [],
+        "items": [],
+        "tokens": [],
+        "description": description,
+        "direction": prev_direction,
+        "roll_result": roll_result,
+        "passage_data": data,
+        "prev_data": prev_location_data
+    }
+
+    return new_location, grid_data
+        
+
+def roll_room(dungeon_data):
+    pass
+
+def roll_door(dungeon_data):
+    pass
+
+def roll_stairs(dungeon_data):
+    pass

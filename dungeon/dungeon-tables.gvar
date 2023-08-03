@@ -1,0 +1,3 @@
+size = load_json(get_gvar('c0f8e00d-c507-4ec9-8ee9-8a7578914981'))
+start = load_json(get_gvar('5c94c522-332f-46ea-9961-c732f6202df0'))
+passage = load_json(get_gvar('d1211f0a-bebf-45dc-ae05-6e5fb5b19cc6'))

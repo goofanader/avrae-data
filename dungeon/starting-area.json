@@ -1,0 +1,36 @@
+{
+    "name": "Starting Area",
+    "roll": "1d5",
+    "table": [
+        {
+            "name": "Passage",
+            "roll_on": "passage"
+        },
+        {
+            "name": "Room",
+            "roll_on": "room"
+        },
+        {
+            "name": "Door",
+            "roll_on": "door"
+        },
+        {
+            "name": "Stairs",
+            "roll_on": "stairs"
+        },
+        {
+            "name": "Open Entrance",
+            "roll": "1d2",
+            "table": [
+                {
+                    "name": "Passage",
+                    "roll_on": "passage"
+                },
+                {
+                    "name": "Room",
+                    "roll_on": "room"
+                }
+            ]
+        }
+    ]
+}
